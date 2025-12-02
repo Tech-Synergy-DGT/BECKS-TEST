@@ -49,7 +49,7 @@
   <h2 style="margin:0 0 8px 0;font-size:1rem">BDI/BAI</h2>
   <div style="display:flex;align-items:center;margin-bottom:1rem;color:red;">
     <button id="chooseTemplateBtn" class="btn ghost">Choose template PDF</button>
-    <span id="templateName" class="small" style="color:green;min-width:200px;display:inline-block"></span>
+    <span id="templateName" class="small" style="color:green;min-width:200px;display:inline-block;padding-left:1rem"></span>
   </div>
   <div style="transition:max-height 0.3s ease;" id="panel">
     <div class="header-row">
@@ -555,7 +555,7 @@ generateBtn.addEventListener('click', async ()=>{
   const blob = new Blob([pdfBytes], { type:'application/pdf' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = (answers.fields.name || 'Report') + ' - BECKS Report.pdf';
+  a.download = (answers.fields.name || 'Report') + ' - BECKS.pdf';
   document.body.appendChild(a); a.click();
   setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1500);
 });
