@@ -563,7 +563,8 @@ generateBtn.addEventListener('click', async ()=>{
   const patient = answers.fields.name || 'Report';
   const doctor = answers.fields.doctor || '';
   const date = new Date().toLocaleDateString();
-  a.download = `${patient} - BECKS - Dr. ${doctor} - ${date}.pdf`;
+  const safe = s => s.replace(/[\\/:*?"<>|]/g, '');
+  a.download = `${safe(patient)} - BECKS - Dr. ${safe(doctor)} - ${safe(date)}.pdf`;
   document.body.appendChild(a); a.click();
   setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1500);
 });
