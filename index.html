@@ -188,7 +188,7 @@ const bai = [
 const baiOpts = ["Not at all","Mildly, it did not bother me much","Moderately, it was very unpleasant but I could stand it","Severely, I could barely stand it"];
 
 /* ======= state ======= */
-let answers = { fields:{name:'',age:'',sex:'',marital:'',occupation:'',education:'',doctor:''}, page1:{}, page2:{}, page3:Array(bai.length).fill(null) };
+let answers = { fields:{name:'',age:'',sex:'',marital:'',occupation:'',education:'',doctor:'', evalDate:''}, page1:{}, page2:{}, page3:Array(bai.length).fill(null) };
 let step = 1;
 const bdiCount = bdi1.length + bdi2.length;
 const baiCount = bai.length;
@@ -562,13 +562,13 @@ generateBtn.addEventListener('click', async ()=>{
   a.href = URL.createObjectURL(blob);
   const patient = answers.fields.name || 'Report';
   const doctor = answers.fields.doctor || '';
-  const d = new Date();
+  const d = answers.fields.evalDate || "";
   const mm = String(d.getMonth() + 1).padStart(2, '0');
   const dd = String(d.getDate()).padStart(2, '0');
   const yy = String(d.getFullYear()).slice(-2);
   const date = `${mm}-${dd}-${yy}`;
   const safe = s => s.replace(/[\\/:*?"<>|]/g, '');
-  a.download = `${safe(patient)} - BECKS - Dr. ${safe(doctor)} - ${safe(date)}.pdf`;
+  a.download = `${safe(patient)} - BECKS - Dr. ${safe(doctor)} - ${date}.pdf`;
   document.body.appendChild(a); a.click();
   setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1500);
 });
