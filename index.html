@@ -562,7 +562,11 @@ generateBtn.addEventListener('click', async ()=>{
   a.href = URL.createObjectURL(blob);
   const patient = answers.fields.name || 'Report';
   const doctor = answers.fields.doctor || '';
-  const date = new Date().toLocaleDateString();
+  const d = new Date();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  const yy = String(d.getFullYear()).slice(-2);
+  const date = `${mm}-${dd}-${yy}`;
   const safe = s => s.replace(/[\\/:*?"<>|]/g, '');
   a.download = `${safe(patient)} - BECKS - Dr. ${safe(doctor)} - ${safe(date)}.pdf`;
   document.body.appendChild(a); a.click();
