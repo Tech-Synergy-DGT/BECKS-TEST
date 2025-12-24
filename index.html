@@ -331,7 +331,7 @@ function render(){
       switchTab('BAI');
       qAreaBAI.innerHTML = '<div class="qtitle">BAI complete — ready to generate report.</div><div class="small">Click Generate Report when ready.</div>';
       document.getElementById('prevBAI').classList.remove('hidden');
-      document.getElementById('nextBAI').classList.add('hidden');      // <-- hide Next
+      document.getElementById('nextBAI').classList.add('hidden');
     }
   }
 
@@ -562,7 +562,8 @@ generateBtn.addEventListener('click', async ()=>{
   a.href = URL.createObjectURL(blob);
   const patient = answers.fields.name || 'Report';
   const doctor = answers.fields.doctor || '';
-  a.download = `${patient} BECKS - Dr. ${doctor}.pdf`;
+  const date = new Date().toLocaleDateString();
+  a.download = `${patient} - BECKS - Dr. ${doctor} - ${date}.pdf`;
   document.body.appendChild(a); a.click();
   setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1500);
 });
