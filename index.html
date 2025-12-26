@@ -38,6 +38,7 @@
   .option-row input[type="radio"]{margin-top:4px}
 </style>
 <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+<script src="https://unpkg.com/docx@7.7.0/build/index.js"></script>
 </head>
 <div id="preloader">
   <div class="spinner"></div>
@@ -112,7 +113,8 @@
   </div>
 
   <div style="margin-top:12px;display:flex;gap:10px">
-    <button id="generateBtn" class="btn" disabled>Generate</button>
+    <button id="generateBtn" class="btn" disabled>Generate Form (PDF)</button>
+    <button id="generateBtn2" class="btn" type="button" disabled>Generate Report (Word)</button>
   </div>
 
   <footer>  </footer>
@@ -121,7 +123,6 @@
 <script>
 /*========toggle=======*/
   const btn=document.getElementById('toggleBtn');const panel=document.getElementById('panel');
-  btn.onclick=function(){if(panel.style.display==="none"){panel.style.display="block";btn.textContent="^ Hide";}else{panel.style.display="none";btn.textContent="v Show";}};
 
   btn.onclick = function () {
     if (panel.style.display === "none") {
@@ -200,7 +201,7 @@ const page1Positions = {
   marital: {x:430.7,y:638.5},
   age: {x:496.7,y:637.5},
   sex: {x:552.7,y:636.9},
-  occupation: {x:252.7,y:620.2},
+  occupation: {x:252.7,y:622.2},
   education: {x:475.3,y:620.2},
   subtotal: {x:355.0,y:86.0},
   bubbles: {
@@ -219,7 +220,7 @@ const page1Positions = {
   rightX:362.0
 };
 const page2Positions = {
-  subtotal: {x:350,y:100.2},
+  subtotal: {x:350,y:102.2},
   subtotal1: {x:350,y:85.2},
   totalScore: {x:350,y:67.9},
   leftX:136.0,
@@ -240,7 +241,7 @@ const page2Positions = {
 };
 const page3Positions = {
   cols: [260.8,343.4,438.1,516.8],
-  rows: [566.3,544.1,521.6,500.9,480.9,458.3,437.7,415.7,396.9,373.0,352.4,331.7,311.1,289.9,267.9,248.6,225.2,204.6,183.9,162.6,139.9],
+  rows: [566.3,544.1,523.6,500.9,480.9,458.3,437.7,415.7,396.9,373.0,352.4,331.7,311.1,289.9,267.9,248.6,225.2,204.6,183.9,162.6,139.9],
   tallyY: 117.9,
   totalBox: {x:393.1,y:57.6}
 };
@@ -462,7 +463,9 @@ function updateTotals(){
   document.getElementById('p1sub').textContent = p1sub;
   document.getElementById('p2sub').textContent = p2sub;
   const cols = [0,0,0,0];
-  answers.page3.forEach(sel => { if(sel!==null && sel!==undefined) cols[sel] += sel; });
+  answers.page3.forEach(sel => {
+    if (Number.isInteger(sel)) cols[sel] += 1;
+  });
   document.getElementById('mildT').textContent = cols[1] || 0;
   document.getElementById('modT').textContent = cols[2] || 0;
   document.getElementById('sevT').textContent = cols[3] || 0;
@@ -470,11 +473,14 @@ function updateTotals(){
 }
 function updateGenerateState(){
   const allAnswered = allBDIAnswered() && answers.page3.every(v=> v!==null && v!==undefined);
-  generateBtn.disabled = !(allAnswered && templateArrayBuffer);
+  generateBtn.disabled  = !(allAnswered && templateArrayBuffer);
+  generateBtn2.disabled = !allAnswered;
   if(allBDIAnswered()) tabBAI.classList.remove('locked');
 }
 
 /* ======= PDF overlay (pdf-lib) ======= */
+const totalBDI = computeBDIScore();
+
 function drawCenteredText(page, font, text, centerX, centerY, size=12){
   const textWidth = font.widthOfTextAtSize(text, size);
   const x = centerX - textWidth/2;
@@ -485,7 +491,7 @@ generateBtn.addEventListener('click', async ()=>{
   if(!allBDIAnswered()){ alert('Complete all BDI questions.'); switchTab('BDI'); return; }
   if(answers.page3.some(v=> v===null || v===undefined)){ alert('Complete all BAI symptoms.'); switchTab('BAI'); return; }
   if(!templateArrayBuffer){ alert('Select template PDF'); return; }
-  // sync header
+  
   answers.fields.name = (document.getElementById('nameField').value||'').trim();
   answers.fields.age = document.getElementById('ageField').value||'';
   answers.fields.sex = document.getElementById('sexField').value||'';
@@ -562,13 +568,68 @@ generateBtn.addEventListener('click', async ()=>{
   a.href = URL.createObjectURL(blob);
   const patient = answers.fields.name || 'Report';
   const doctor = answers.fields.doctor || '';
-  a.download = `${patient} BECKS - Dr. ${doctor}.pdf`;
+  a.download = `${patient} - BECKS - Dr. ${doctor}.pdf`;
   document.body.appendChild(a); a.click();
   setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1500);
 });
 
+/* =======Word Button Handler =======*/
+generateBtn2.addEventListener('click', async ()=>{
+  const blob = await generateWordReport();
+  if (!blob) return;
+
+  const bdi = computeBDIScore();
+  const bai = computeBAIScore();
+
+  const name = answers.fields.name || "Unknown";
+  const doctor = answers.fields.doctor || "Unknown";
+
+  const safe = s => s.replace(/[\\/:*?"<>|]/g,'');
+  const filename =
+    `${safe(name)} - BA${bai} BD${bdi} - Dr. ${safe(doctor)}.docx`;
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+
 /* ======= helpers ======= */
 function allBDIAnswered(){ return bdi1.every(q=>answers.page1[q.id]) && bdi2.every(q=>answers.page2[q.id]); }
+
+/* ======= shared scoring (single source of truth) ======= */
+function computeBDIScore(){
+  const p1 = Object.values(answers.page1)
+    .reduce((s,o)=>s + (o?.score || 0), 0);
+  const p2 = Object.values(answers.page2)
+    .reduce((s,o)=>s + (o?.score || 0), 0);
+  return p1 + p2;
+}
+
+function computeBAIScore(){
+  return answers.page3.reduce(
+    (a,b)=> a + (Number.isInteger(b) ? b : 0),
+    0
+  );
+}
+
+function getBAISeverity(score){
+  if(score <= 7) return { label: "Minimal Anxiety", range: "0–7" };
+  if(score <= 15) return { label: "Mild Anxiety", range: "8–15" };
+  if(score <= 25) return { label: "Moderate Anxiety", range: "16–25" };
+  return { label: "Severe Anxiety", range: "26–63" };
+}
+
+function getBDISeverity(score){
+  if(score <= 9) return { label: "Minimal Depression", range: "0–9" };
+  if(score <= 18) return { label: "Mild Depression", range: "10–18" };
+  if(score <= 29) return { label: "Moderate Depression", range: "19–29" };
+  return { label: "Severe Depression", range: "30–63" };
+}
 
 /* ======= init ======= */
 window.addEventListener('load', ()=> { 
@@ -586,6 +647,135 @@ window.addEventListener('load', ()=> {
   })
   .catch(err => console.warn("Could not auto-load template.pdf:", err));
 });
+
+/* ======= Word Generator (scores only, shared engine) ======= */
+async function generateWordReport(){
+  if (!window.docx) {
+    alert("Word library not loaded.");
+    return null;
+  }
+
+  const { Document, Packer, Paragraph, TextRun, AlignmentType } = docx;
+
+  const bdiScore = computeBDIScore();
+  const baiScore = computeBAIScore();
+  const bdi = getBDISeverity(bdiScore);
+  const bai = getBAISeverity(baiScore);
+
+  const doc = new Document({
+    styles: {
+      paragraphStyles: [
+        {
+          id: "JustifiedBody",
+          name: "Justified Body",
+          basedOn: "Normal",
+          next: "Normal",
+          quickFormat: true,
+          run: { size: 26 },
+          paragraph: { alignment: AlignmentType.JUSTIFIED, spacing: { after: 0 } }
+        }
+      ]
+    },
+    sections: [{
+      children: [
+        // Title
+        new Paragraph({
+          children: [new TextRun({ text: "PSYCHIATRIC DIAGNOSTIC TESTING", bold: true, underline: true, size: 26 })],
+          alignment: AlignmentType.CENTER
+        }),
+
+        // Spacer
+        new Paragraph({ children: [new TextRun({ text: "\u00A0", size: 26 })] }),
+
+        // BAI Heading
+        new Paragraph({
+          children: [new TextRun({ text: `BECK ANXIETY INVENTORY: ${baiScore} – ${bai.label}`, bold: true, size: 26 })],
+          alignment: AlignmentType.CENTER
+        }),
+
+        // Spacer
+        new Paragraph({ children: [new TextRun({ text: "\u00A0", size: 26 })] }),
+
+        // BAI Description
+        new Paragraph({
+          style: "JustifiedBody",
+          children: [new TextRun({
+            text: "The Beck Anxiety Inventory is a 21-question self-report inventory which asks the applicant to choose from a hierarchy of levels of anxiety-related symptomatology for each question. This is a self-rating device to delineate the nature, intensity and frequency of anxiety-related symptomatology. Each question is scored from zero to three, with a maximum score of 63 for the test. The higher the score the higher the self-rating by the applicant as a measure of anxiety-related symptoms."
+          })]
+        }),
+
+        // Spacer
+        new Paragraph({ children: [new TextRun({ text: "\u00A0", size: 26 })] }),
+
+        // BAI Severity lines
+        new Paragraph({
+          children: [new TextRun({ text: "0–7\t\t Minimal Anxiety", bold: baiScore <= 7, size: 26 })],
+          indent: { left: 2880 }
+        }),
+        new Paragraph({
+          children: [new TextRun({ text: "8–15\t\t Mild Anxiety", bold: baiScore >= 8 && baiScore <= 15, size: 26 })],
+          indent: { left: 2880 }
+        }),
+        new Paragraph({
+          children: [new TextRun({ text: "16–25\t\t Moderate Anxiety", bold: baiScore >= 16 && baiScore <= 25, size: 26 })],
+          indent: { left: 2880 }
+        }),
+        new Paragraph({
+          children: [new TextRun({ text: "26+\t\t Severe Anxiety", bold: baiScore >= 26, size: 26 })],
+          indent: { left: 2880 }
+        }),
+
+        // Spacer
+        new Paragraph({ children: [new TextRun({ text: "\u00A0", size: 26 })] }),
+
+        // BDI Heading
+        new Paragraph({
+          children: [new TextRun({ text: `BECK DEPRESSION INVENTORY: ${bdiScore} – ${bdi.label}`, bold: true, size: 26 })],
+          alignment: AlignmentType.CENTER
+        }),
+
+        // Spacer
+        new Paragraph({ children: [new TextRun({ text: "\u00A0", size: 26 })] }),
+
+        // BDI Description
+        new Paragraph({
+          style: "JustifiedBody",
+          children: [new TextRun({
+            text: "The Beck Depression Inventory (BDI) is a 21-question self-report inventory which asks the applicant to choose from a hierarchy of levels of depressive symptomatology for each question. This is a self-rating device to delineate the nature, intensity and frequency of depressive symptomatology. Each question is scored from zero to three, with maximum score of 63 for the test. The higher the score, the higher self-rating by the applicant as a measure of depressive symptoms."
+          })]
+        }),
+
+        // Spacer
+        new Paragraph({ children: [new TextRun({ text: "\u00A0", size: 26 })] }),
+
+        // BDI Severity lines
+        new Paragraph({
+          children: [new TextRun({ text: "0–9\t\t Minimal Depression", bold: bdiScore <= 9, size: 26 })],
+          indent: { left: 2880 }
+        }),
+        new Paragraph({
+          children: [new TextRun({ text: "10–18\t\t Mild Depression", bold: bdiScore >= 10 && bdiScore <= 18, size: 26 })],
+          indent: { left: 2880 }
+        }),
+        new Paragraph({
+          children: [new TextRun({ text: "19–29\t\t Moderate Depression", bold: bdiScore >= 19 && bdiScore <= 29, size: 26 })],
+          indent: { left: 2880 }
+        }),
+        new Paragraph({
+          children: [new TextRun({ text: "30+\t\t Severe Depression", bold: bdiScore >= 30, size: 26 })],
+          indent: { left: 2880 }
+        }),
+
+        // Final Spacer
+        new Paragraph({ children: [new TextRun({ text: "\u00A0", size: 26 })] }),
+      ]
+    }]
+  });
+
+  return await Packer.toBlob(doc);
+}
+
+
 </script>
 </body>
 </html>
