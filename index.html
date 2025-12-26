@@ -473,8 +473,6 @@ function updateGenerateState(){
 }
 
 /* ======= PDF overlay (pdf-lib) ======= */
-const totalBDI = computeBDIScore();
-
 function drawCenteredText(page, font, text, centerX, centerY, size=12){
   const textWidth = font.widthOfTextAtSize(text, size);
   const x = centerX - textWidth/2;
