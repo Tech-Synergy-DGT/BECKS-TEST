@@ -38,9 +38,10 @@
 <script src="https://unpkg.com/docx@7.7.0/build/index.js"></script>
 </head>
 <body>
-  <h2 style="margin:0 0 8px 0;font-size:1rem">BDI/BAI</h2>
-<div style="transition:max-height 0.3s ease;" id="panel">
-  <p style="margin:0;font-size:1rem;">Doctor's Name:</p>
+  <div class="wrap" style="transition:max-height 0.3s ease;" id="panel">
+    <h1 style="font-size:1.8rem; margin: 0">BDI/BAI</h1>
+  <div>
+    <p style="margin:0;font-size:1rem;">Doctor's Name:</p>
   <div class="header-row">
 	<input style="flex:54" id="doctorField" type="text" placeholder="Doctor"/>
     <div style="flex:100"></div>
@@ -62,7 +63,7 @@
       <input id="educationField" type="text" placeholder="Education" style="flex:1.5"/>
     </div>
   </div>
-<div>
+</div>
 
 <div class="wrap">
   <div class="tabs">
@@ -79,7 +80,7 @@
       <div class="small">BAI progress</div>
       <div class="progress"><div id="baiBar" class="bar"></div></div>
     </div>
-    <button class="btn" id="toggleBtn">^ Hide</button>
+    <button class="btn" id="toggleBtn" style="font-size: 0.65rem;background: #98FB98; color: black">^ Hide</button>
   </div>
 
   <div id="panelBDI" class="panel">
