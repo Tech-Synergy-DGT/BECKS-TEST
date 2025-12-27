@@ -7,11 +7,11 @@
 <title>BECKS BDI & BAI</title>
 <style>
   :root{--bg:#f6f8fb;--card:#fff;--accent:#0b6fa6;--muted:#6b7280}
-  body{font-family:system-ui,Segoe UI,Roboto,Arial;font-size: 1.5rem; background:var(--bg);margin:0;padding:20px;color:#0f172a}
-  .wrap{max-width:980px;margin:18px auto;background:var(--card);border-radius:10px;padding:18px;box-shadow:0 6px 20px rgba(2,6,23,0.06)}
+  body{font-family:system-ui,Segoe UI,Roboto,Arial;font-size: 1.5rem; background:var(--bg);margin:0;color:#0f172a}
+  .wrap{max-width:980px;margin:0 auto;background:var(--card);border-radius:10px;padding:18px;box-shadow:0 6px 20px rgba(2,6,23,0.06)}
   .header-row{display:flex;gap:12px;margin-bottom:12px}
   input[type="text"],input[type="number"],select{padding:8px;border:1px solid #e6edf3;border-radius:8px;width:100%}
-  .tabs{display:flex;gap:8px;margin:12px 0;font-size:1rem}
+  .tabs{display:flex;gap:8px;margin:0 12px 12px 12px;font-size:1rem}
   .tab{padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:700;color:var(--accent);background:transparent;border:1px solid transparent}
   .tab.active{background:var(--accent);color:#fff}
   .tab.locked{opacity:.45;cursor:not-allowed}
@@ -30,19 +30,13 @@
   .hidden{display:none !important}
   footer{margin-top:12px;font-size:13px;color:var(--muted);align-self:end}
   table{width:100%;border-collapse:collapse;margin-top:6px}
-  .instruction{font-size: 1rem; margin:1rem 1rem 4rem 1rem;}
-  #preloader{position:fixed;inset:0;background:#ffffff;display:flex;align-items:center;justify-content:center;z-index:9999;}
-  .spinner{width:60px;height:60px;border:6px solid#ddd;border-top-color:#3498db;border-radius:50%;animation:spin 0.8 slinear infinite;}
-  @keyframes spin{to{transform:rotate(360deg);}}
+  .instruction{font-size: 1rem; margin:0 2rem 1rem 2rem;}
   .option-row{display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:flex-start;margin:6px 0}
   .option-row input[type="radio"]{margin-top:4px}
 </style>
 <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
 <script src="https://unpkg.com/docx@7.7.0/build/index.js"></script>
 </head>
-<div id="preloader">
-  <div class="spinner"></div>
-</div>
 <body>
 <div class="wrap">
   <h2 style="margin:0 0 8px 0;font-size:1rem">BDI/BAI</h2>
@@ -90,7 +84,7 @@
     <button class="btn" id="toggleBtn">^ Hide</button>
   </div>
 
-  <div id="panelBDI" class="panel" style="margin-top:12px">
+  <div id="panelBDI" class="panel">
     <div class="instruction"><b>Instructions:</b> Pick one statement that best describes the way you have been feeling during the past two weeks, including today.</div>
     <div class="qArea" id="qAreaBDI"></div>
     <div class="nav">
@@ -101,7 +95,7 @@
     </div>
   </div>
 
-  <div id="panelBAI" class="panel" style="margin-top:12px;display:none">
+  <div id="panelBAI" class="panel" style="display:none">
     <div class="instruction">Instruction: Indicate how much you have been bothered by the following symptoms for the past week.</div>
     <div class="qArea" id="qAreaBAI"></div>
     <div class="nav">
@@ -284,16 +278,6 @@ document.body.appendChild(fileInput);
 chooseBtn.addEventListener('click', ()=> fileInput.click());
 
 /* ======= render logic ======= */
-window.addEventListener("load", function () {
-    const loader = document.getElementById("preloader");
-    loader.style.opacity = "0";
-
-    // Optional: fade out
-    setTimeout(() => {
-      loader.style.display = "none";
-    }, 300);
-  });
-	
 function render(){
   // sync header
   answers.fields.name = (document.getElementById('nameField').value||'').trim();
