@@ -30,7 +30,7 @@
   .hidden{display:none !important}
   footer{margin-top:12px;font-size:13px;color:var(--muted);align-self:end}
   table{width:100%;border-collapse:collapse;margin-top:6px}
-  .instruction{font-size: 1rem; margin:1rem 1rem 4rem 1rem;}
+  .instruction{font-size: 1rem; margin:1rem 1rem 2rem 1rem;}
   .option-row{display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:flex-start;margin:6px 0}
   .option-row input[type="radio"]{margin-top:4px}
 </style>
@@ -38,7 +38,7 @@
 <script src="https://unpkg.com/docx@7.7.0/build/index.js"></script>
 </head>
 <body>
-<div class="wrap">
+<div class="wrap" id="panel">
   <h2 style="margin:0 0 8px 0;font-size:1rem">BDI/BAI</h2>
   <p style="margin:0;font-size:1rem;">Evaluation Date:</p>
   <div class="header-row">
@@ -55,7 +55,7 @@
     <span id="templateName" class="small" style="color:green;min-width:200px;display:inline-block;padding-left:1rem"></span>
   </div>
 
-  <div style="transition:max-height 0.3s ease;" id="panel">
+  <div style="transition:max-height 0.3s ease;">
     <div class="header-row">
       <input id="nameField" type="text" placeholder="Name" style="flex:2"/>
       <input id="ageField" type="number" placeholder="Age" style="flex:1"/>
