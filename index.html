@@ -154,7 +154,7 @@ const bdi2 = [
   {id:12, text:"Loss of Interest", opts:["0 - I have not lost interest in other people or activities.","1 - I am less interested in other people or things than before.","2 - I have lost most of my interest in other people or things.","3 - It's hard to get interested in anything."]},
   {id:13, text:"Indecisiveness", opts:["0 - I make decisions about as well as ever.","1 - I find it more difficult to make decisions than usual.","2 - I have much greater difficulty in making decisions than I used to.","3 - I have trouble making any decisions."]},
   {id:14, text:"Worthlessness", opts:["0 - I do not feel I am worthless.","1 - I don't consider myself as worthwhile and useful as I used to.","2 - I feel more worthless as compared to other people.","3 - I feel utterly worthless."]},
-  {id:15, text:"Loss of Energy", opts:["0 - I have as much energy as ever.","1 - I have less energy than I used to have.","2 -  don't have enough energy to do very much.","3 - I don't have enough energy to do anything."]},
+  {id:15, text:"Loss of Energy", opts:["0 - I have as much energy as ever.","1 - I have less energy than I used to have.","2 - I don't have enough energy to do very much.","3 - I don't have enough energy to do anything."]},
   {id:16, text:"Changes in Sleeping Pattern", opts:[
     "0 - I have not experienced any change in my sleeping pattern.",
     "1a - I sleep somewhat more than usual.",
@@ -742,19 +742,19 @@ async function generateWordReport(){
 
         // BAI Severity lines
         new Paragraph({
-          children: [new TextRun({ text: "0–7\t\t Minimal Anxiety", bold: baiScore <= 7, size: 26 })],
+          children: [new TextRun({ text: "0–7\t\tMinimal Anxiety", bold: baiScore <= 7, size: 26 })],
           indent: { left: 2880 }
         }),
         new Paragraph({
-          children: [new TextRun({ text: "8–15\t\t Mild Anxiety", bold: baiScore >= 8 && baiScore <= 15, size: 26 })],
+          children: [new TextRun({ text: "8–15\t\tMild Anxiety", bold: baiScore >= 8 && baiScore <= 15, size: 26 })],
           indent: { left: 2880 }
         }),
         new Paragraph({
-          children: [new TextRun({ text: "16–25\t\t Moderate Anxiety", bold: baiScore >= 16 && baiScore <= 25, size: 26 })],
+          children: [new TextRun({ text: "16–25\t\tModerate Anxiety", bold: baiScore >= 16 && baiScore <= 25, size: 26 })],
           indent: { left: 2880 }
         }),
         new Paragraph({
-          children: [new TextRun({ text: "26+\t\t Severe Anxiety", bold: baiScore >= 26, size: 26 })],
+          children: [new TextRun({ text: "26+\t\tSevere Anxiety", bold: baiScore >= 26, size: 26 })],
           indent: { left: 2880 }
         }),
 
@@ -783,24 +783,24 @@ async function generateWordReport(){
 
         // BDI Severity lines
         new Paragraph({
-          children: [new TextRun({ text: "0–9\t\t Minimal Depression", bold: bdiScore <= 9, size: 26 })],
+          children: [new TextRun({ text: "0–9\t\tMinimal Depression", bold: bdiScore <= 9, size: 26 })],
           indent: { left: 2880 }
         }),
         new Paragraph({
-          children: [new TextRun({ text: "10–18\t\t Mild Depression", bold: bdiScore >= 10 && bdiScore <= 18, size: 26 })],
+          children: [new TextRun({ text: "10–18\t\tMild Depression", bold: bdiScore >= 10 && bdiScore <= 18, size: 26 })],
           indent: { left: 2880 }
         }),
         new Paragraph({
-          children: [new TextRun({ text: "19–29\t\t Moderate Depression", bold: bdiScore >= 19 && bdiScore <= 29, size: 26 })],
+          children: [new TextRun({ text: "19–29\t\tModerate Depression", bold: bdiScore >= 19 && bdiScore <= 29, size: 26 })],
           indent: { left: 2880 }
         }),
         new Paragraph({
-          children: [new TextRun({ text: "30+\t\t Severe Depression", bold: bdiScore >= 30, size: 26 })],
+          children: [new TextRun({ text: "30+\t\tSevere Depression", bold: bdiScore >= 30, size: 26 })],
           indent: { left: 2880 }
         }),
 
         // Final Spacer
-        new Paragraph({ children: [new TextRun({ text: "\u00A0", size: 26 })] }),
+        new Paragraph({ children: [new TextRun({text: "\u00A0", size: 26 })] }),
       ]
     }]
   });
