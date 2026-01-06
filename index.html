@@ -697,7 +697,28 @@ async function generateWordReport(){
 
   const doc = new Document({
     styles: {
+      default: {
+        document: {
+          run: {
+            size: 26, // 13pt
+          },
+          paragraph: {
+            alignment: docx.AlignmentType.JUSTIFIED,
+          },
+        },
+      },
       paragraphStyles: [
+        {
+          id: "Normal",
+          name: "Normal",
+          run: {
+            size: 26, // 13pt
+          },
+          paragraph: {
+            alignment: docx.AlignmentType.JUSTIFIED,
+            spacing: { after: 0 },
+          },
+        },
         {
           id: "JustifiedBody",
           name: "Justified Body",
@@ -705,9 +726,12 @@ async function generateWordReport(){
           next: "Normal",
           quickFormat: true,
           run: { size: 26 },
-          paragraph: { alignment: AlignmentType.JUSTIFIED, spacing: { after: 0 } }
-        }
-      ]
+          paragraph: {
+            alignment: docx.AlignmentType.JUSTIFIED,
+            spacing: { after: 0 },
+          },
+        },
+      ],
     },
     sections: [{
       children: [
