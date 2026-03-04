@@ -101,7 +101,7 @@
   </div>
 
   <div id="panelBAI" class="panel" style="display:none">
-    <div class="instruction">Instruction: Indicate how much you have been bothered by the following symptoms for the past week.</div>
+    <div id="instruction" class="instruction">Instruction: Indicate how much you have been bothered by the following symptoms for the past week as a result of anxiety.</div>
     <div class="qArea" id="qAreaBAI"></div>
     <div class="nav">
       <button id="prevBAI" class="btn ghost hidden">Previous</button>
@@ -239,7 +239,7 @@ const page2Positions = {
   }
 };
 const page3Positions = {
-  cols: [260.8,343.4,438.1,516.8],
+  cols: [260.8,343.4,438.1,530.8],
   rows: [566.3,544.1,523.6,500.9,480.9,458.3,437.7,415.7,396.9,373.0,352.4,331.7,311.1,289.9,267.9,248.6,225.2,204.6,183.9,162.6,139.9],
   tallyY: 117.9,
   totalBox: {x:393.1,y:57.6}
@@ -258,7 +258,11 @@ const generateBtn = document.getElementById('generateBtn');
 const chooseBtn = document.getElementById('chooseTemplateBtn');
 const templateNameSpan = document.getElementById('templateName');
 
-tabBDI.addEventListener('click', ()=> switchTab('BDI'));
+tabBDI.addEventListener('click', ()=> {
+  step = bdiCount; // force to last BDI question (21)
+  switchTab('BDI');
+  render();
+});
 tabBAI.addEventListener('click', ()=> { if(!tabBAI.classList.contains('locked')) switchTab('BAI'); });
 
 function switchTab(name){
@@ -322,6 +326,7 @@ function render(){
       qAreaBAI.innerHTML = '<div class="qtitle">BAI complete — ready to generate report.</div><div class="small">Click Generate Report when ready.</div>';
       document.getElementById('prevBAI').classList.remove('hidden');
       document.getElementById('nextBAI').classList.add('hidden');
+      document.getElementById('instruction').classList.add('hidden');
       generateBtn2.classList.remove('hidden');
       generateBtn.classList.remove('hidden');
       
