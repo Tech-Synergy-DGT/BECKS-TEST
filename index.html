@@ -740,7 +740,14 @@ async function generateWordReport(){
     },
     sections: [{
       children: [
-        // Title
+        new Paragraph({
+          children: [new TextRun({ text: "Administered by: ", size: 26 })],
+        }),
+
+        // Spacer
+        new Paragraph({ children: [new TextRun({ text: "", size: 26 })] }),
+		  
+		  // Title
         new Paragraph({
           children: [new TextRun({ text: "PSYCHIATRIC DIAGNOSTIC TESTING", bold: true, underline: true, size: 26 })],
           alignment: AlignmentType.CENTER
