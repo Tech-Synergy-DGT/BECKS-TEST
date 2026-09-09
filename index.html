@@ -559,9 +559,6 @@ generateBtn.addEventListener('click', async ()=>{
   page3Positions.cols.forEach((cx,i)=> drawCenteredText(p3, helv, String(colTotals[i]||0), cx, page3Positions.tallyY, 12));
   drawCenteredText(p3, helv, String(colTotals.reduce((a,b)=>a+b,0)), page3Positions.totalBox.x, page3Positions.totalBox.y, 12);
 
-  function stripDrPrefix(s){
-    return (s||'').replace(/^\s*dr\.?\s*/i, '').trim();
-  }
   const pdfBytes = await pdfDoc.save();
   const blob = new Blob([pdfBytes], { type:'application/pdf' });
   const a = document.createElement('a');
@@ -606,6 +603,10 @@ function allBDIAnswered(){ return bdi1.every(q=>answers.page1[q.id]) && bdi2.eve
 
 function safeFilename(s){
   return (s||'').replace(/[\\/:*?"<>|]/g,'').trim();
+}
+
+function stripDrPrefix(s){
+  return (s||'').replace(/^\s*dr\.?\s*/i, '').trim();
 }
 
 function normalizeDateForFilename(input){
