@@ -559,6 +559,9 @@ generateBtn.addEventListener('click', async ()=>{
   page3Positions.cols.forEach((cx,i)=> drawCenteredText(p3, helv, String(colTotals[i]||0), cx, page3Positions.tallyY, 12));
   drawCenteredText(p3, helv, String(colTotals.reduce((a,b)=>a+b,0)), page3Positions.totalBox.x, page3Positions.totalBox.y, 12);
 
+  function stripDrPrefix(s){
+    return (s||'').replace(/^\s*dr\.?\s*/i, '').trim();
+  }
   const pdfBytes = await pdfDoc.save();
   const blob = new Blob([pdfBytes], { type:'application/pdf' });
   const a = document.createElement('a');
@@ -567,7 +570,7 @@ generateBtn.addEventListener('click', async ()=>{
   const doctor = answers.fields.doctor || '';
   const evalDateStr = normalizeDateForFilename(answers.fields.evalDate);
   const dateSuffix = evalDateStr ? ` - ${evalDateStr}` : '';
-  a.download = `${safeFilename(patient)} - BECKS - Dr. ${safeFilename(doctor)} ${dateSuffix}.pdf`;
+  a.download = `${safeFilename(patient)} - BECKS - Dr. ${safeFilename(stripDrPrefix(doctor))} ${dateSuffix}.pdf`;
   document.body.appendChild(a); a.click();
   setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1500);
 });
@@ -586,7 +589,7 @@ generateBtn2.addEventListener('click', async ()=>{
   const safe = s => s.replace(/[\\/:*?"<>|]/g,'');
   const evalDateStr = normalizeDateForFilename(answers.fields.evalDate || document.getElementById('evalDate').value || '');
   const dateSuffix = evalDateStr ? ` - ${evalDateStr}` : '';
-  const filename = `${safeFilename(name)} - BA${bai} BD${bdi} - Dr. ${safeFilename(doctor)}${dateSuffix}.docx`;
+  const filename = `${safeFilename(name)} - BA${bai} BD${bdi} - Dr. ${safeFilename(stripDrPrefix(doctor))}${dateSuffix}.docx`;
 
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
