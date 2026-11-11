@@ -564,10 +564,9 @@ generateBtn.addEventListener('click', async ()=>{
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   const patient = answers.fields.name || 'Report';
-  const doctor = answers.fields.doctor || '';
   const evalDateStr = normalizeDateForFilename(answers.fields.evalDate);
   const dateSuffix = evalDateStr ? ` - ${evalDateStr}` : '';
-  a.download = `${safeFilename(patient)} - BECKS - Dr. ${safeFilename(stripDrPrefix(doctor))} ${dateSuffix}.pdf`;
+  a.download = `${safeFilename(patient)} - BECKS${getDoctorPart()}${dateSuffix}.pdf`;
   document.body.appendChild(a); a.click();
   setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1500);
 });
@@ -581,12 +580,11 @@ generateBtn2.addEventListener('click', async ()=>{
   const bai = computeBAIScore();
 
   const name = answers.fields.name || "Unknown";
-  const doctor = answers.fields.doctor || "Unknown";
 
   const safe = s => s.replace(/[\\/:*?"<>|]/g,'');
   const evalDateStr = normalizeDateForFilename(answers.fields.evalDate || document.getElementById('evalDate').value || '');
   const dateSuffix = evalDateStr ? ` - ${evalDateStr}` : '';
-  const filename = `${safeFilename(name)} - BA${bai} BD${bdi} - Dr. ${safeFilename(stripDrPrefix(doctor))}${dateSuffix}.docx`;
+  const filename = `${safeFilename(name)} - BA${bai} BD${bdi}${getDoctorPart()}${dateSuffix}.docx`;
 
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -607,6 +605,12 @@ function safeFilename(s){
 
 function stripDrPrefix(s){
   return (s||'').replace(/^\s*dr\.?\s*/i, '').trim();
+}
+
+function getDoctorPart(){
+  const raw = (document.getElementById('doctorField').value || '').trim();
+  const cleaned = safeFilename(stripDrPrefix(raw));
+  return cleaned ? ` - Dr. ${cleaned}` : '';
 }
 
 function normalizeDateForFilename(input){
